@@ -36,6 +36,10 @@ data class WeatherDataEntity(
     
     val country: String?,
     
+    val sunrise: Long?,
+    
+    val sunset: Long?,
+    
     val lastUpdated: Long = System.currentTimeMillis()
 )
 

@@ -230,6 +230,8 @@ class WeatherRepository(
             icon = response.weather?.firstOrNull()?.icon,
             windSpeed = response.wind?.speed,
             country = response.system?.country,
+            sunrise = response.system?.sunrise,
+            sunset = response.system?.sunset,
             lastUpdated = System.currentTimeMillis()
         )
     }
@@ -272,8 +274,8 @@ class WeatherRepository(
                 type = null,
                 id = null,
                 country = entity.country,
-                sunrise = null,
-                sunset = null
+                sunrise = entity.sunrise,
+                sunset = entity.sunset
             ),
             base = null,
             visibility = null,

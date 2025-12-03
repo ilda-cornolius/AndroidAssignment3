@@ -15,7 +15,7 @@ import com.kenneth_demo.data.local.entity.WeatherDataEntity
  */
 @Database(
     entities = [FavoriteLocation::class, WeatherDataEntity::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class WeatherDatabase : RoomDatabase() {

@@ -233,17 +233,25 @@ fun DetailedWeatherContent(
                     
                     Spacer(modifier = Modifier.height(8.dp))
                     
-                    sys.sunrise?.let { sunrise ->
-                        val sunriseDate = Date(sunrise * 1000)
-                        val sunriseFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
-                        WeatherDetailRow("Sunrise", sunriseFormat.format(sunriseDate))
-                    }
+                    // Sunrise
+                    WeatherDetailRow(
+                        "Sunrise",
+                        sys.sunrise?.let { sunrise ->
+                            val sunriseDate = Date(sunrise * 1000)
+                            val sunriseFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+                            sunriseFormat.format(sunriseDate)
+                        } ?: "N/A"
+                    )
                     
-                    sys.sunset?.let { sunset ->
-                        val sunsetDate = Date(sunset * 1000)
-                        val sunsetFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
-                        WeatherDetailRow("Sunset", sunsetFormat.format(sunsetDate))
-                    }
+                    // Sunset
+                    WeatherDetailRow(
+                        "Sunset",
+                        sys.sunset?.let { sunset ->
+                            val sunsetDate = Date(sunset * 1000)
+                            val sunsetFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+                            sunsetFormat.format(sunsetDate)
+                        } ?: "N/A"
+                    )
                 }
             }
         }
