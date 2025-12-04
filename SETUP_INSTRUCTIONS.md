@@ -69,3 +69,4 @@ If you get an error, check:
 - **"404 Not Found"**: URL might be incorrect
 - **"403 Forbidden"**: API key is blocked or invalid
 
+ 

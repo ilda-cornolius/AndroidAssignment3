@@ -1,5 +1,6 @@
 package com.kenneth_demo.data.repository
 
+import android.util.Log
 import com.kenneth_demo.data.local.WeatherDatabase
 import com.kenneth_demo.data.local.dao.FavoriteLocationDao
 import com.kenneth_demo.data.local.dao.WeatherDataDao
@@ -60,9 +61,16 @@ class WeatherRepository(
             
             Result.success(response)
         } catch (e: Exception) {
+            // Log the full error for debugging
+            Log.e("WeatherRepository", "Network error for city: $cityName", e)
+            Log.e("WeatherRepository", "Error type: ${e.javaClass.simpleName}")
+            Log.e("WeatherRepository", "Error message: ${e.message}")
+            Log.e("WeatherRepository", "API Key: ${RetrofitClient.API_KEY.take(8)}...")
+            
             // If network fails, try to return cached data
             val cachedData = weatherDataDao.getWeatherDataSync(cityName)
             if (cachedData != null) {
+                Log.d("WeatherRepository", "Returning cached data for $cityName")
                 Result.success(cachedDataToWeatherResponse(cachedData))
             } else {
                 // Provide a more helpful error message
@@ -70,11 +78,12 @@ class WeatherRepository(
                     RetrofitClient.API_KEY == "YOUR_API_KEY_HERE" -> {
                         "API key not configured. Please set your OpenWeatherMap API key in RetrofitClient.kt"
                     }
-                    e.message?.contains("Unable to resolve host", ignoreCase = true) == true -> {
-                        "Unable to connect to server. Check:\n1. Internet connection\n2. API key is correct\n3. Try again in a few minutes"
+                    e.message?.contains("Unable to resolve host", ignoreCase = true) == true ||
+                    e.message?.contains("UnknownHostException", ignoreCase = true) == true -> {
+                        "⚠️ DNS Resolution Failed\n\nYour device cannot resolve 'api.openweathermap.org'.\n\n🔧 Quick Fixes:\n1. Use a PHYSICAL Android device (recommended)\n2. Restart emulator + restart computer\n3. Test browser on device: api.openweathermap.org\n4. Change emulator DNS to 8.8.8.8\n\nThis is a device/emulator DNS issue, not a code problem.\nYour API call format is correct!"
                     }
                     e.message?.contains("401", ignoreCase = true) == true || e.message?.contains("Unauthorized", ignoreCase = true) == true -> {
-                        "Authentication failed (401). Please check your API key in RetrofitClient.kt"
+                        "Authentication failed (401).\n\nYour API key may be:\n• Not activated yet (wait 10-15 min)\n• Invalid\n\nCheck: RetrofitClient.kt line 23"
                     }
                     e.message?.contains("403", ignoreCase = true) == true || e.message?.contains("Forbidden", ignoreCase = true) == true -> {
                         "Access forbidden (403). Your API key may be blocked or invalid."
@@ -83,13 +92,18 @@ class WeatherRepository(
                         "URL not found (404). Check the API endpoint configuration."
                     }
                     e.message?.contains("timeout", ignoreCase = true) == true || e.message?.contains("timed out", ignoreCase = true) == true -> {
-                        "Connection timeout. Please check your internet connection and try again."
+                        "Connection timeout.\n\nCheck:\n• Internet connection speed\n• Firewall/VPN blocking requests\n• Try again later"
                     }
-                    e.message?.contains("SSL", ignoreCase = true) == true || e.message?.contains("certificate", ignoreCase = true) == true -> {
-                        "SSL/Certificate error. Check your device's date/time settings."
+                    e.message?.contains("SSL", ignoreCase = true) == true || 
+                    e.message?.contains("certificate", ignoreCase = true) == true ||
+                    e.message?.contains("HandshakeException", ignoreCase = true) == true -> {
+                        "SSL/Certificate error.\n\nFix:\n• Settings → Date & Time → Enable 'Automatic'\n• Check device date/time is correct"
+                    }
+                    e.message?.contains("NetworkSecurityException", ignoreCase = true) == true -> {
+                        "Network security error.\n\nFix:\n• Rebuild the app (Clean → Rebuild)\n• Check network_security_config.xml"
                     }
                     else -> {
-                        "Error: ${e.message ?: e.javaClass.simpleName}\n\nPlease check:\n1. Internet connection\n2. API key: ${RetrofitClient.API_KEY.take(8)}...\n3. Try again later"
+                        "Network Error: ${e.javaClass.simpleName}\n\nDetails: ${e.message}\n\nCheck:\n1. Internet connection\n2. API key: ${RetrofitClient.API_KEY.take(8)}...\n3. Check Logcat for full error"
                     }
                 }
                 Result.failure(Exception(errorMessage, e))

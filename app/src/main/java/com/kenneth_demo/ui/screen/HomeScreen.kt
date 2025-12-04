@@ -42,11 +42,9 @@ fun HomeScreen(
     val uiState by viewModel.uiState.collectAsState()
     val isFavorite by viewModel.isFavorite.collectAsState()
     
-    // Default city to show on home screen
+    // Default city to show on home screen - fetch on first load
     LaunchedEffect(Unit) {
-        if (uiState is WeatherUiState.Loading) {
-            viewModel.fetchWeather("London") // Default city
-        }
+        viewModel.fetchWeather("London") // Default city: London
     }
     
     Column(
