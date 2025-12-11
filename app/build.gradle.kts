@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.kenneth_demo"
+    namespace = "com.ildaphonsecornolius.comp304lab3.ex1"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.kenneth_demo"
+        applicationId = "com.ildaphonsecornolius.comp304lab3.ex1"
         minSdk = 26
         targetSdk = 35
         versionCode = 1
