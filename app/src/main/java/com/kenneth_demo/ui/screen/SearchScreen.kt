@@ -21,12 +21,12 @@ import com.kenneth_demo.ui.viewmodel.WeatherUiState
 import com.kenneth_demo.ui.viewmodel.WeatherViewModel
 import com.kenneth_demo.ui.viewmodel.WeatherViewModelFactory
 
-/**
- * Search screen for searching weather by city name.
- */
+
+ //The UI for the Search screen used to find the weather of a specified city
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
+    //Sets up listeners for when the user presses back or selects a city
     onNavigateBack: () -> Unit,
     onNavigateToDetail: (String) -> Unit,
     viewModel: WeatherViewModel = viewModel(
@@ -35,6 +35,7 @@ fun SearchScreen(
         )
     )
 ) {
+    //saving the search query entered in the text box 
     var searchQuery by remember { mutableStateOf("") }
     val uiState by viewModel.uiState.collectAsState()
     
@@ -43,7 +44,7 @@ fun SearchScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        // Search bar
+        // Search bar properties
         OutlinedTextField(
             value = searchQuery,
             onValueChange = { searchQuery = it },
@@ -62,7 +63,7 @@ fun SearchScreen(
         
         Spacer(modifier = Modifier.height(16.dp))
         
-        // Search button
+        // Properties for the Search button
         Button(
             onClick = {
                 if (searchQuery.isNotBlank()) {
@@ -77,7 +78,7 @@ fun SearchScreen(
         
         Spacer(modifier = Modifier.height(16.dp))
         
-        // Search results
+        // Properties for Search results
         when (val currentState = uiState) {
             is WeatherUiState.Loading -> {
                 Box(
@@ -113,9 +114,8 @@ fun SearchScreen(
     }
 }
 
-/**
- * Search result card component.
- */
+
+ //Design of the search result cards
 @Composable
 fun SearchResultCard(
     weather: WeatherResponse,
@@ -130,12 +130,13 @@ fun SearchResultCard(
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
+            //Displays the name of the city
             Text(
                 text = weather.name ?: "Unknown",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold
             )
-            
+            //displays the country code of the city
             weather.system?.country?.let {
                 Text(
                     text = it,
@@ -151,6 +152,7 @@ fun SearchResultCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                //Displays the temperature of the city in the search result
                 weather.main?.temperature?.let {
                     Text(
                         text = "${it.toInt()}°C",
@@ -159,6 +161,7 @@ fun SearchResultCard(
                     )
                 }
                 
+                //displays the description of the weather in the selected city
                 weather.weather?.firstOrNull()?.description?.let { description ->
                     Text(
                         text = description.replaceFirstChar { it.uppercaseChar() },
@@ -170,6 +173,7 @@ fun SearchResultCard(
             
             Spacer(modifier = Modifier.height(8.dp))
             
+            //Text to instruct the user to click on the card for more details 
             Text(
                 text = "Tap to view details →",
                 fontSize = 12.sp,

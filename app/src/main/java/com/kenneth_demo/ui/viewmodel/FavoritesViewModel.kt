@@ -10,10 +10,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-/**
- * ViewModel for managing favorite locations.
- * Follows MVVM architecture pattern.
- */
+
+ //The view model is the bridge between the UI and data 
+ //it holds the data from configuration changes 
+ //this is the view model for the favorites_location table
 class FavoritesViewModel(private val repository: WeatherRepository) : ViewModel() {
     
     private val _favorites = MutableStateFlow<List<FavoriteLocation>>(emptyList())
@@ -26,9 +26,7 @@ class FavoritesViewModel(private val repository: WeatherRepository) : ViewModel(
         loadFavorites()
     }
     
-    /**
-     * Loads all favorite locations from the repository.
-     */
+    //function to load all the favorite entries in the repository
     private fun loadFavorites() {
         viewModelScope.launch {
             repository.getAllFavorites().collect { favoriteList ->
@@ -37,11 +35,8 @@ class FavoritesViewModel(private val repository: WeatherRepository) : ViewModel(
         }
     }
     
-    /**
-     * Removes a favorite location.
-     * 
-     * @param favoriteLocation The favorite location to remove
-     */
+ 
+     //function to remove a favorite location
     fun removeFavorite(favoriteLocation: FavoriteLocation) {
         viewModelScope.launch {
             _isLoading.value = true
@@ -55,11 +50,7 @@ class FavoritesViewModel(private val repository: WeatherRepository) : ViewModel(
         }
     }
     
-    /**
-     * Removes a favorite location by city name.
-     * 
-     * @param cityName The name of the city to remove
-     */
+   //function to remove a favorite entry by city name 
     fun removeFavoriteByCityName(cityName: String) {
         viewModelScope.launch {
             _isLoading.value = true
@@ -74,9 +65,8 @@ class FavoritesViewModel(private val repository: WeatherRepository) : ViewModel(
     }
 }
 
-/**
- * Factory for creating FavoritesViewModel instances.
- */
+
+ //class to create FavoriteViewModel instances
 class FavoritesViewModelFactory(private val repository: WeatherRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(FavoritesViewModel::class.java)) {

@@ -2,10 +2,9 @@ package com.kenneth_demo.data.model
 
 import com.google.gson.annotations.SerializedName
 
-/**
- * Data model representing the complete weather API response.
- * This follows the OpenWeatherMap API structure.
- */
+
+ //This is the data model to receive the weather API response.
+ //the WeatherResponse class stores the weather API's response
 data class WeatherResponse(
     @SerializedName("coord")
     val coordinates: Coordinates?,
@@ -47,9 +46,8 @@ data class WeatherResponse(
     val cod: Int?
 )
 
-/**
- * Coordinates (latitude and longitude) for a location.
- */
+
+ //Stores the coordinates of the selected location after getting a api response
 data class Coordinates(
     @SerializedName("lon")
     val longitude: Double?,
@@ -58,9 +56,7 @@ data class Coordinates(
     val latitude: Double?
 )
 
-/**
- * Weather condition information.
- */
+//Stores the weather conditions after receiving a api response
 data class Weather(
     @SerializedName("id")
     val id: Int?,
@@ -75,9 +71,8 @@ data class Weather(
     val icon: String?
 )
 
-/**
- * Main weather parameters (temperature, pressure, humidity, etc.).
- */
+//main weather parameters such as temperature and humidity
+//this information is received from the Weather API response
 data class MainWeather(
     @SerializedName("temp")
     val temperature: Double?,
@@ -104,9 +99,7 @@ data class MainWeather(
     val groundLevel: Int?
 )
 
-/**
- * Wind information.
- */
+//Wind information for the selected area
 data class Wind(
     @SerializedName("speed")
     val speed: Double?,
@@ -118,9 +111,7 @@ data class Wind(
     val gust: Double?
 )
 
-/**
- * Cloud information.
- */
+//Cloud information for the selected area 
 data class Clouds(
     @SerializedName("all")
     val all: Int?
@@ -129,6 +120,8 @@ data class Clouds(
 /**
  * System information (country, sunrise, sunset, etc.).
  */
+
+ //Information stored about the country, and sunrise/sunset details times
 data class SystemInfo(
     @SerializedName("type")
     val type: Int?,

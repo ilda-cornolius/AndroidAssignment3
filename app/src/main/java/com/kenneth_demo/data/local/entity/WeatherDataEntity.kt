@@ -3,12 +3,12 @@ package com.kenneth_demo.data.local.entity
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-/**
- * Room entity for caching weather data locally.
- * This allows offline access to recently viewed weather information.
- */
+
+ //Setting up the blueprint for the Weather Data Table
 @Entity(tableName = "weather_data")
 data class WeatherDataEntity(
+    //Setting up the data values per weather data entry
+    //CityName is the primary key for this Weather data table
     @PrimaryKey
     val cityName: String,
     

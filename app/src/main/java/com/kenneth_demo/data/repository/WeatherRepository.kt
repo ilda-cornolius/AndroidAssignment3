@@ -13,11 +13,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
-/**
- * Repository class implementing the Repository pattern.
- * Abstracts data access and provides a single source of truth for weather data.
- * Handles both network calls and local database operations.
- */
+
+ //The weather repository class caches data from the Weather API call
+ //It uses database dao methods for storing information such as favorite cities
+ //It is mostly used for handling data sources such as API calls and Database Calls 
 class WeatherRepository(
     private val weatherApiService: WeatherApiService,
     private val favoriteLocationDao: FavoriteLocationDao,
@@ -25,20 +24,18 @@ class WeatherRepository(
 ) {
     
     companion object {
-        // Cache expiration time: 30 minutes
+        // value for cache expiration time at 30 minutes 
         private const val CACHE_EXPIRATION_TIME = 30 * 60 * 1000L
     }
     
-    /**
-     * Fetches weather data for a city, using cache if available and valid.
-     * 
-     * @param cityName The name of the city
-     * @param forceRefresh If true, bypasses cache and fetches from network
-     * @return Result containing WeatherResponse or error
-     */
+   
+     //fetches weather data for a city 
+     //first uses the cache to find data 
+     //if not it uses a API call 
     suspend fun getWeatherByCity(cityName: String, forceRefresh: Boolean = false): Result<WeatherResponse> {
         return try {
-            // Check cache first if not forcing refresh
+            // Checking cache first for city data
+            // if not the application refreshes and an api call is started 
             if (!forceRefresh) {
                 val cachedData = weatherDataDao.getWeatherDataSync(cityName)
                 if (cachedData != null && isCacheValid(cachedData.lastUpdated)) {
@@ -47,19 +44,21 @@ class WeatherRepository(
                 }
             }
             
-            // Fetch from network
+            // Fetch data from the API call
             val response = weatherApiService.getWeatherByCity(
+                //values include the cityName and API_KEY
                 cityName = cityName,
                 apiKey = RetrofitClient.API_KEY
             )
             
-            // Save to cache
+            // function to save reponse data to the cache
             response.let { weatherResponse ->
                 val entity = weatherResponseToEntity(weatherResponse)
                 weatherDataDao.insertOrUpdateWeatherData(entity)
             }
             
             Result.success(response)
+            //error logging for situatinos such as API key errors or network errors
         } catch (e: Exception) {
             // Log the full error for debugging
             Log.e("WeatherRepository", "Network error for city: $cityName", e)
@@ -67,7 +66,7 @@ class WeatherRepository(
             Log.e("WeatherRepository", "Error message: ${e.message}")
             Log.e("WeatherRepository", "API Key: ${RetrofitClient.API_KEY.take(8)}...")
             
-            // If network fails, try to return cached data
+            // If the api call fails, try to return cached data
             val cachedData = weatherDataDao.getWeatherDataSync(cityName)
             if (cachedData != null) {
                 Log.d("WeatherRepository", "Returning cached data for $cityName")
@@ -134,18 +133,22 @@ class WeatherRepository(
             
             Result.success(response)
         } catch (e: Exception) {
-            // Provide a more helpful error message
+            // Provide an error message based on context
             val errorMessage = when {
+                //gives an error when the api key is not properly configured
                 RetrofitClient.API_KEY == "YOUR_API_KEY_HERE" -> {
                     "API key not configured. Please set your OpenWeatherMap API key in RetrofitClient.kt"
                 }
                 e.message?.contains("Unable to resolve host") == true -> {
+                    //gives an error when failing to connect to the network
                     "Network error: Unable to connect. Please check your internet connection and API key."
                 }
                 e.message?.contains("401") == true -> {
+                    //error is displayed when the api call is not granted the proper permissions 
                     "Authentication failed. Please check your API key in RetrofitClient.kt"
                 }
                 else -> {
+                    //in any other case a ''failed  to fetch weather data '' message appears 
                     e.message ?: "Failed to fetch weather data. Please check your internet connection."
                 }
             }
@@ -153,40 +156,20 @@ class WeatherRepository(
         }
     }
     
-    /**
-     * Gets all favorite locations as a Flow.
-     * 
-     * @return Flow of list of FavoriteLocation
-     */
+   
+     //function to display all favorite locations without refreshing the page using flow
     fun getAllFavorites(): Flow<List<FavoriteLocation>> {
         return favoriteLocationDao.getAllFavorites()
     }
     
-    /**
-     * Gets all favorite locations as a list (one-time read).
-     * 
-     * @return List of FavoriteLocation
-     */
-    suspend fun getAllFavoritesList(): List<FavoriteLocation> {
-        return favoriteLocationDao.getAllFavoritesList()
-    }
-    
-    /**
-     * Checks if a location is in favorites.
-     * 
-     * @param cityName The name of the city
-     * @return True if the location is a favorite, false otherwise
-     */
+   
+     //function to check if a specified location is in the favorites table 
     suspend fun isFavorite(cityName: String): Boolean {
         return favoriteLocationDao.getFavoriteByCityName(cityName) != null
     }
     
-    /**
-     * Adds a location to favorites.
-     * 
-     * @param weatherResponse WeatherResponse containing location information
-     * @return The ID of the inserted favorite location
-     */
+  
+     //function to add a location to favorites 
     suspend fun addToFavorites(weatherResponse: WeatherResponse): Long {
         val favoriteLocation = FavoriteLocation(
             cityName = weatherResponse.name ?: "",
@@ -198,39 +181,27 @@ class WeatherRepository(
         return favoriteLocationDao.insertFavorite(favoriteLocation)
     }
     
-    /**
-     * Removes a location from favorites.
-     * 
-     * @param cityName The name of the city to remove
-     */
+    //function to remove a location entry from the favorites table using a city name 
     suspend fun removeFromFavorites(cityName: String) {
         favoriteLocationDao.deleteFavoriteByCityName(cityName)
     }
     
-    /**
-     * Removes a favorite location.
-     * 
-     * @param favoriteLocation The FavoriteLocation to remove
-     */
+   
+     //function to remove a location from favorites using a Favorite Location object 
     suspend fun removeFavorite(favoriteLocation: FavoriteLocation) {
         favoriteLocationDao.deleteFavorite(favoriteLocation)
     }
     
-    /**
-     * Checks if cached data is still valid based on expiration time.
-     * 
-     * @param lastUpdated Timestamp of last update
-     * @return True if cache is valid, false if expired
-     */
+    //checks if cached data is still valid to use based on the expiration time set which is 30 minutes
     private fun isCacheValid(lastUpdated: Long): Boolean {
         return (System.currentTimeMillis() - lastUpdated) < CACHE_EXPIRATION_TIME
     }
     
-    /**
-     * Converts WeatherResponse to WeatherDataEntity for caching.
-     */
+ 
+     //function to cache the api response for Weather Data for local use 
     private fun weatherResponseToEntity(response: WeatherResponse): WeatherDataEntity {
         return WeatherDataEntity(
+            //variables for storing data in the API response cache
             cityName = response.name ?: "",
             latitude = response.coordinates?.latitude ?: 0.0,
             longitude = response.coordinates?.longitude ?: 0.0,

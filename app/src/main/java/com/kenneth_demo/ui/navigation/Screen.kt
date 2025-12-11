@@ -1,9 +1,8 @@
 package com.kenneth_demo.ui.navigation
 
-/**
- * Sealed class defining all navigation routes/screens in the app.
- * Used for type-safe navigation in Jetpack Compose Navigation.
- */
+
+ //This class defines all navigation routes
+ //This makes it easier to access the home, search, favorites, and detail screens
 sealed class Screen(val route: String) {
     object Home : Screen("home")
     object Search : Screen("search")

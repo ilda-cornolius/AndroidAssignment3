@@ -14,15 +14,19 @@ import androidx.compose.ui.Modifier
 import com.kenneth_demo.ui.navigation.AppNavHost
 import com.kenneth_demo.ui.theme.WeatherAppTheme
 
+//Using the ExperimentalMaterial3Api class to use with API calls
 @OptIn(ExperimentalMaterial3Api::class)
+//Start of the program
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        //creates and starts the application
         super.onCreate(savedInstanceState)
-
+        //Sets the content of the weather app theme
         setContent {
             WeatherAppTheme {
                 Scaffold(
                     topBar = {
+                        //Setting up the top bar colors and title text
                         TopAppBar(
                             colors = TopAppBarDefaults.topAppBarColors(
                                 containerColor = MaterialTheme.colorScheme.primaryContainer,

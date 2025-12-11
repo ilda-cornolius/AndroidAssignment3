@@ -6,31 +6,30 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
-/**
- * Retrofit client singleton for creating API service instances.
- * Handles network configuration, logging, and error handling.
- */
+
+ //This object sets up the API service instance of the WeatherAPI service
+ //It also handles the network configuration to access the API
+ //It also handles response/request http logging
 object RetrofitClient {
     
-    // Base URL for OpenWeatherMap Current Weather API
-    // IMPORTANT: The correct URL is "api.openweathermap.org" (with "map" in the domain)
-    // NOTE: One Call API 3.0 uses /data/3.0/onecall but requires coordinates and subscription
-    // Current Weather API (/data/2.5/weather) works with city names and is free
+    
+     //the base url for the api
     private const val BASE_URL = "https://api.openweathermap.org/data/2.5/"
     
-    // API Key - Get your free API key from https://openweathermap.org/api
-    // In production, this should be stored securely (e.g., using BuildConfig or local.properties)
+    //The API key used in the base url to make a request
     const val API_KEY = "1e4444cf0ec61bfcebccf8038ce2ebde"
     
-    /**
-     * Creates and configures OkHttpClient with logging interceptor.
-     * This helps in debugging network requests and responses.
-     */
+   
+     //Creates an OkHttp Client Instance to log network requests and responses
+     //a OkHttp client is needed when using Retrofit for making API calls 
     private fun createOkHttpClient(): OkHttpClient {
+
+        //creating a logging interceptor to be included in the OkHttp client
         val loggingInterceptor = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         }
         
+        //Creates an instance of the OkHttpClient
         return OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
             .connectTimeout(30, TimeUnit.SECONDS)
@@ -39,10 +38,10 @@ object RetrofitClient {
             .build()
     }
     
-    /**
-     * Creates Retrofit instance with Gson converter and OkHttpClient.
-     */
+     //Function to create a Retrofit Http client to handle making API calls 
+     //Only uses the function when called due to the lazy keyword
     private val retrofit: Retrofit by lazy {
+        //Creates a RetroFit Client instance
         Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(createOkHttpClient())
@@ -50,9 +49,8 @@ object RetrofitClient {
             .build()
     }
     
-    /**
-     * Provides WeatherApiService instance using lazy initialization.
-     */
+   //function to create a weatherAPIService instance
+   //only creates the function when called using lazy
     val weatherApiService: WeatherApiService by lazy {
         retrofit.create(WeatherApiService::class.java)
     }

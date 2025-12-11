@@ -4,38 +4,26 @@ import com.kenneth_demo.data.model.WeatherResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-/**
- * Retrofit interface for weather API calls.
- * This service handles network requests to fetch weather data.
- */
+
+ //This is the retroface client used for weather API calls
+ //it is used to make network requests for weather data
 interface WeatherApiService {
     
-    /**
-     * Fetches current weather data for a specific city.
-     * 
-     * @param cityName The name of the city
-     * @param apiKey The API key for authentication
-     * @param units The unit system (metric, imperial, or kelvin)
-     * @return WeatherResponse containing weather data
-     */
+    
+     //API request to fetch current weather data for a city
     @GET("weather")
+    //The requests queries for the cityName the apiKey and the unit system (celcius or farenheit)
     suspend fun getWeatherByCity(
         @Query("q") cityName: String,
         @Query("appid") apiKey: String,
         @Query("units") units: String = "metric"
     ): WeatherResponse
     
-    /**
-     * Fetches current weather data by latitude and longitude.
-     * 
-     * @param lat The latitude coordinate
-     * @param lon The longitude coordinate
-     * @param apiKey The API key for authentication
-     * @param units The unit system (metric, imperial, or kelvin)
-     * @return WeatherResponse containing weather data
-     */
+   
+     //API request to fetch weather data containing the longtitude and latitude of a city
     @GET("weather")
     suspend fun getWeatherByCoordinates(
+        //Queries for the long and lat, api key, and the unit system type
         @Query("lat") lat: Double,
         @Query("lon") lon: Double,
         @Query("appid") apiKey: String,

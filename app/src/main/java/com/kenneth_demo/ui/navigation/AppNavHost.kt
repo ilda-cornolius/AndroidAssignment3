@@ -12,21 +12,19 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.kenneth_demo.ui.screen.*
 
-/**
- * Navigation host for the weather application.
- * Handles navigation between different screens with argument passing.
- * Supports responsive layouts for foldables and large screens.
- */
+
+ //This class sets up navigation methods between screens in the application
 @Composable
 fun AppNavHost(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
     
     NavHost(
+        //creating the navigation controller and setting the home screen as the startDestination
         navController = navController,
         startDestination = Screen.Home.route,
         modifier = modifier
     ) {
-        // Home screen
+        // Creates navigationController functionality in the home screen
         composable(Screen.Home.route) {
             HomeScreen(
                 onNavigateToSearch = {
@@ -41,19 +39,21 @@ fun AppNavHost(modifier: Modifier = Modifier) {
             )
         }
         
-        // Search screen
+        // Defines the search screen
         composable(Screen.Search.route) {
+            //When the user presses the back button it goes to the previous screen
             SearchScreen(
                 onNavigateBack = {
                     navController.popBackStack()
                 },
+                //when the user presses the card it goes to the detail screen
                 onNavigateToDetail = { cityName ->
                     navController.navigate(Screen.Detail.createRoute(cityName))
                 }
             )
         }
         
-        // Favorites screen
+        // Defines the favorites screen
         composable(Screen.Favorites.route) {
             FavoritesScreen(
                 onNavigateBack = {
@@ -65,7 +65,7 @@ fun AppNavHost(modifier: Modifier = Modifier) {
             )
         }
         
-        // Detail screen with city name argument
+        // Defines the detail screen with city name argument
         composable(
             route = Screen.Detail.route,
             arguments = listOf(

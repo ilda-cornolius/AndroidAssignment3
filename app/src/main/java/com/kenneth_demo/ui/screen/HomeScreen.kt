@@ -27,9 +27,12 @@ import com.kenneth_demo.ui.viewmodel.WeatherViewModelFactory
 /**
  * Home screen displaying weather information and providing navigation options.
  */
+ //UI design of the home screen
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
+    //Creating listeners when the user searches a city, navigates to the favorites screen
+    //or goes to the detail screen
     onNavigateToSearch: () -> Unit,
     onNavigateToFavorites: () -> Unit,
     onNavigateToDetail: (String) -> Unit,
@@ -39,10 +42,12 @@ fun HomeScreen(
         )
     )
 ) {
+    //checks the state of the weather data
     val uiState by viewModel.uiState.collectAsState()
+    //checks if the city displayed is favorited
     val isFavorite by viewModel.isFavorite.collectAsState()
     
-    // Default city to show on home screen - fetch on first load
+    // Sets London as the default city to show when the application launches
     LaunchedEffect(Unit) {
         viewModel.fetchWeather("London") // Default city: London
     }
@@ -58,6 +63,7 @@ fun HomeScreen(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
+            //button to navigate to the search screen
             Button(
                 onClick = onNavigateToSearch,
                 modifier = Modifier.weight(1f).padding(end = 8.dp)
@@ -67,6 +73,7 @@ fun HomeScreen(
                 Text("Search")
             }
             
+            //button to navgiate to favorites
             Button(
                 onClick = onNavigateToFavorites,
                 modifier = Modifier.weight(1f).padding(start = 8.dp)
@@ -79,13 +86,13 @@ fun HomeScreen(
         
         Spacer(modifier = Modifier.height(16.dp))
         
-        // Weather content
+        //the weather content function of the displayed card
         when (val currentState = uiState) {
             is WeatherUiState.Loading -> {
                 CircularProgressIndicator(modifier = Modifier.padding(32.dp))
                 Text("Loading weather data...", modifier = Modifier.padding(top = 16.dp))
             }
-            
+            //if the api call is successful it will store the details in the below variables
             is WeatherUiState.Success -> {
                 WeatherContent(
                     weather = currentState.weather,
@@ -96,6 +103,7 @@ fun HomeScreen(
                 )
             }
             
+            //if there is an error in the weather api call an error message is displays 
             is WeatherUiState.Error -> {
                 ErrorContent(
                     message = currentState.message,
@@ -106,13 +114,13 @@ fun HomeScreen(
     }
 }
 
-/**
- * Weather content display component.
- */
+//ui design for the weather content cards on the home screen
 @Composable
 fun WeatherContent(
     weather: WeatherResponse,
     isFavorite: Boolean,
+    //sets listeners for when the favorite button or detail card is pressed.
+    //sets a listener if the application refreshes
     onToggleFavorite: () -> Unit,
     onRefresh: () -> Unit,
     onNavigateToDetail: (String) -> Unit
@@ -123,7 +131,7 @@ fun WeatherContent(
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // City name and favorite button
+        // displays the city name and favorite button
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -152,7 +160,7 @@ fun WeatherContent(
         
         Spacer(modifier = Modifier.height(8.dp))
         
-        // Country
+        // Displays the Country code
         weather.system?.country?.let {
             Text(
                 text = it,
@@ -163,7 +171,7 @@ fun WeatherContent(
         
         Spacer(modifier = Modifier.height(24.dp))
         
-        // Temperature
+        // Displays the temperature of the city
         weather.main?.temperature?.let {
             Text(
                 text = "${it.toInt()}°C",
@@ -172,7 +180,7 @@ fun WeatherContent(
             )
         }
         
-        // Weather description
+        // Displays the weather description of the city 
         weather.weather?.firstOrNull()?.description?.let { description ->
             Text(
                 text = description.replaceFirstChar { it.uppercaseChar() },
@@ -183,7 +191,8 @@ fun WeatherContent(
         
         Spacer(modifier = Modifier.height(32.dp))
         
-        // Weather details card
+        // displays the weather description of the city/card
+        //this includes details like humidity and air pressure
         Card(
             modifier = Modifier.fillMaxWidth(),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -214,9 +223,8 @@ fun WeatherContent(
     }
 }
 
-/**
- * Weather detail row component.
- */
+
+//Formatting for some of the detail data in the weather cards
 @Composable
 fun WeatherDetailRow(label: String, value: String) {
     Row(
@@ -238,9 +246,7 @@ fun WeatherDetailRow(label: String, value: String) {
     }
 }
 
-/**
- * Error content display component.
- */
+//Displays a error message on the screen if the API call fails
 @Composable
 fun ErrorContent(message: String, onRetry: () -> Unit) {
     Column(

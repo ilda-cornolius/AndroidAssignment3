@@ -25,9 +25,8 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-/**
- * Detail screen showing comprehensive weather information for a specific city.
- */
+
+ //This ui screen for the weather data of a selected location
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailScreen(
@@ -48,6 +47,7 @@ fun DetailScreen(
     
     Scaffold(
         topBar = {
+            //Properties of the top bar
             TopAppBar(
                 title = { Text("Weather Details") },
                 navigationIcon = {
@@ -59,12 +59,14 @@ fun DetailScreen(
                     if (uiState is WeatherUiState.Success) {
                         val weather = (uiState as WeatherUiState.Success).weather
                         
+                        //icon button for the fetch weather button (refreshes weather data)
                         IconButton(onClick = {
                             viewModel.fetchWeather(cityName, true)
                         }) {
                             Icon(Icons.Default.Refresh, contentDescription = "Refresh")
                         }
                         
+                        //Icon functionality for the favorite button
                         IconButton(onClick = {
                             viewModel.toggleFavorite(weather)
                         }) {
@@ -123,9 +125,8 @@ fun DetailScreen(
     }
 }
 
-/**
- * Detailed weather content component.
- */
+
+ //Details of the selected cities' weather
 @Composable
 fun DetailedWeatherContent(
     weather: com.kenneth_demo.data.model.WeatherResponse,
@@ -135,7 +136,7 @@ fun DetailedWeatherContent(
         modifier = modifier.padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // City name
+        // Text of the city name
         Text(
             text = weather.name ?: "Unknown",
             fontSize = 32.sp,
@@ -152,7 +153,7 @@ fun DetailedWeatherContent(
         
         Spacer(modifier = Modifier.height(8.dp))
         
-        // Coordinates
+        // Coordinations of the location
         weather.coordinates?.let { coord ->
             Text(
                 text = "Lat: ${String.format("%.2f", coord.latitude)}, Lon: ${String.format("%.2f", coord.longitude)}",
@@ -163,7 +164,7 @@ fun DetailedWeatherContent(
         
         Spacer(modifier = Modifier.height(24.dp))
         
-        // Temperature
+        //Displays the temperature of the selected city
         weather.main?.temperature?.let {
             Text(
                 text = "${it.toInt()}°C",
@@ -172,7 +173,7 @@ fun DetailedWeatherContent(
             )
         }
         
-        // Weather description
+        // displays a description of the weather in the selected city
         weather.weather?.firstOrNull()?.description?.let { description ->
             Text(
                 text = description.replaceFirstChar { it.uppercaseChar() },
@@ -183,7 +184,8 @@ fun DetailedWeatherContent(
         
         Spacer(modifier = Modifier.height(32.dp))
         
-        // Weather details cards
+        
+        //Properties of the weather detail cards
         WeatherDetailsCard(
             title = "Temperature",
             items = listOf(
@@ -195,6 +197,7 @@ fun DetailedWeatherContent(
         
         Spacer(modifier = Modifier.height(16.dp))
         
+        //Properties of the Atmosphere weather details card
         WeatherDetailsCard(
             title = "Atmospheric",
             items = listOf(
@@ -206,6 +209,7 @@ fun DetailedWeatherContent(
         
         Spacer(modifier = Modifier.height(16.dp))
         
+        //Properties of the Wind and Clouds Card
         WeatherDetailsCard(
             title = "Wind & Clouds",
             items = listOf(
@@ -215,9 +219,10 @@ fun DetailedWeatherContent(
             )
         )
         
+        
         weather.system?.let { sys ->
             Spacer(modifier = Modifier.height(16.dp))
-            
+            //Properties of the Sun Card
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -233,7 +238,7 @@ fun DetailedWeatherContent(
                     
                     Spacer(modifier = Modifier.height(8.dp))
                     
-                    // Sunrise
+                    //Displays when Sunrise begins
                     WeatherDetailRow(
                         "Sunrise",
                         sys.sunrise?.let { sunrise ->
@@ -243,7 +248,7 @@ fun DetailedWeatherContent(
                         } ?: "N/A"
                     )
                     
-                    // Sunset
+                    //Displays when Sunset begins
                     WeatherDetailRow(
                         "Sunset",
                         sys.sunset?.let { sunset ->
@@ -256,6 +261,7 @@ fun DetailedWeatherContent(
             }
         }
         
+        //shows text at the bottom of the screen displaying the last time the data was updated
         weather.dateTime?.let { dt ->
             Spacer(modifier = Modifier.height(16.dp))
             
@@ -271,9 +277,9 @@ fun DetailedWeatherContent(
     }
 }
 
-/**
- * Weather details card component.
- */
+
+ //Displays all the different weather details as a list
+ //Each card is separate such as Atmosphere and Temperature
 @Composable
 fun WeatherDetailsCard(
     title: String,

@@ -5,22 +5,24 @@ import com.kenneth_demo.data.local.WeatherDatabase
 import com.kenneth_demo.data.network.RetrofitClient
 import com.kenneth_demo.data.repository.WeatherRepository
 
-/**
- * Application class for dependency injection.
- * Provides access to repository and database instances throughout the app.
- */
+
+ //This class Initializes the repository and database instances to be used
+ //while the application is open
 class WeatherApplication : Application() {
     
-    // Database instance
+    // Creating a Database instance
     val database: WeatherDatabase by lazy {
         WeatherDatabase.getDatabase(this)
     }
     
-    // Repository instance
+    // Creating a Repository instance
     val weatherRepository: WeatherRepository by lazy {
         WeatherRepository(
+            //Creating the weather api service
             weatherApiService = RetrofitClient.weatherApiService,
+            //Setting up the favoriate location dao
             favoriteLocationDao = database.favoriteLocationDao(),
+            //Setting up the weather data dao
             weatherDataDao = database.weatherDataDao()
         )
     }

@@ -3,12 +3,12 @@ package com.kenneth_demo.data.local.entity
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-/**
- * Room entity representing a favorite location saved by the user.
- * This entity stores basic location information for quick access.
- */
+=
+ //Blueprint for the favorite_location data table in the database
+ //The table name is favorite_location
 @Entity(tableName = "favorite_locations")
 data class FavoriteLocation(
+    //data values for the favorite_location per entry
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     
